@@ -17,7 +17,6 @@
     </section>
 
     <main v-if="pokemon" class="contenedor">
-      <!-- Sección izquierda -->
       <section class="col izq">
         <div class="pokemon-card">
           <h2>{{ capitalizar(pokemon.name) }}</h2>
@@ -27,7 +26,6 @@
         </div>
       </section>
 
-      <!-- Sección central -->
       <section class="col centro">
         <h2 class="numero"># {{ pokemon.id }}</h2>
 
@@ -48,7 +46,6 @@
         </div>
       </section>
 
-      <!-- Sección derecha -->
       <section class="col der">
         <h3 class="titulo-stats">Estadísticas</h3>
         <div v-for="s in pokemon.stats" :key="s.stat.name" class="stat">
@@ -107,14 +104,12 @@ onMounted(buscarPokemon);
 </script>
 
 <style scoped>
-/* 🔹 Reset general */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* 🔹 Estructura base */
 html, body, #app {
   width: 100%;
   height: 100%;
@@ -123,7 +118,6 @@ html, body, #app {
   color: #222;
 }
 
-/* 🔹 App principal */
 .app {
   min-height: 100vh;
   display: flex;
@@ -133,7 +127,6 @@ html, body, #app {
   text-align: center;
 }
 
-/* 🔹 Encabezado */
 .header {
   display: flex;
   align-items: center;
@@ -153,7 +146,7 @@ html, body, #app {
   width: 50px;
   height: 50px;
 }
-/* 🔹 Buscador */
+
 .buscador {
   margin: 1.5rem 0;
   display: flex;
@@ -184,7 +177,6 @@ html, body, #app {
   background: #e0b93c;
 }
 
-/* 🔹 Contenedor principal */
 .contenedor {
   display: flex;
   justify-content: center;
@@ -200,12 +192,10 @@ html, body, #app {
   flex-wrap: wrap; /* Responsive */
 }
 
-/* 🔹 Columnas */
 .col {
   flex: 1;
 }
 
-/* 🔹 Izquierda (tarjeta del Pokémon) */
 .izq {
   display: flex;
   justify-content: center;
@@ -222,7 +212,6 @@ html, body, #app {
   font-size: 1.3rem;
 }
 
-/* 🔹 Imagen del Pokémon */
 .pokemon-card img {
   width: 500px;
   height: 500px;
@@ -234,7 +223,6 @@ html, body, #app {
   transform: scale(1.05);
 }
 
-/* 🔹 Centro (info general) */
 .centro {
   display: flex;
   flex-direction: column;
@@ -275,7 +263,6 @@ html, body, #app {
   font-weight: bold;
 }
 
-/* 🔹 Derecha (estadísticas) */
 .der {
   text-align: left;
   min-width: 300px;
@@ -307,16 +294,10 @@ html, body, #app {
   border-radius: 6px;
 }
 
-/* 🔹 Mensaje de error o sin resultados */
 .mensaje {
   font-size: 1.2rem;
   margin-top: 2rem;
   color: #666;
 }
 
-
-
 </style>
-
-
-
