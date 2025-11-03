@@ -299,5 +299,4 @@ html, body, #app {
   margin-top: 2rem;
   color: #666;
 }
-
 </style>
