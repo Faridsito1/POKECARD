@@ -1,9 +1,12 @@
 <template>
   <div class="app">
-    <header class="header">
-      <img src="/src/assets/pikachu.png" alt="Eevee y Pikachu" class="img1"/>
+    <header class="header" :style="headerStyle">
+      <img src="/src/assets/pikachu.png" alt="Eevee y Pikachu" class="img1" />
       <h1>Pokémon Info</h1>
-      <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/54.png" alt="Psyduck" />
+      <img
+        src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/54.png"
+        alt="Psyduck"
+      />
     </header>
 
     <section class="buscador">
@@ -18,22 +21,29 @@
 
     <main v-if="pokemon" class="contenedor">
       <section class="col izq">
-        <div class="pokemon-card">
+        <div class="pokemon-card" :style="{ backgroundColor: fondoColor }">
           <h2>{{ capitalizar(pokemon.name) }}</h2>
           <img :src="pokemonImg" alt="Pokemon" />
-          <p>Altura: {{ (pokemon.height / 10).toFixed(1) }} m</p>
-          <p>Peso: {{ (pokemon.weight / 10).toFixed(1) }} kg</p>
+          <p>Altura: <strong>{{ (pokemon.height / 10).toFixed(1) }} m</strong></p>
+          <p>Peso: <strong>{{ (pokemon.weight / 10).toFixed(1) }} kg</strong></p>
         </div>
       </section>
 
       <section class="col centro">
-        <h2 class="numero"># {{ pokemon.id }}</h2>
+        <h2 class="numero" :style="{ color: fondoColor }">
+          # {{ pokemon.id.toString().padStart(3, '0') }}
+        </h2>
 
         <div class="tipos">
           <h3>Tipos del Pokémon</h3>
           <div class="tags">
-            <span v-for="t in pokemon.types" :key="t.type.name" class="type">
-              {{ t.type.name }}
+            <span
+              v-for="t in pokemon.types"
+              :key="t.type.name"
+              class="type"
+              :style="{ backgroundColor: typeColors[t.type.name] }"
+            >
+              {{ t.type.name.toUpperCase() }}
             </span>
           </div>
         </div>
@@ -41,7 +51,14 @@
         <div class="debilidades" v-if="weaknesses.length">
           <h3>Debilidades del Pokémon</h3>
           <div class="tags">
-            <span v-for="w in weaknesses" :key="w" class="weak">{{ w }}</span>
+            <span
+              v-for="w in weaknesses"
+              :key="w"
+              class="weak"
+              :style="{ backgroundColor: typeColors[w] || '#999' }"
+            >
+              {{ w.toUpperCase() }}
+            </span>
           </div>
         </div>
       </section>
@@ -51,13 +68,21 @@
         <div v-for="s in pokemon.stats" :key="s.stat.name" class="stat">
           <label>{{ capitalizar(s.stat.name) }}: {{ s.base_stat }}/255</label>
           <div class="bar">
-            <div class="fill" :style="{ width: (s.base_stat / 255 * 100) + '%' }"></div>
+            <div
+              class="fill"
+              :style="{
+                width: (s.base_stat / 255) * 100 + '%',
+                backgroundColor: fondoColor,
+              }"
+            ></div>
           </div>
         </div>
       </section>
     </main>
 
-    <p v-else class="mensaje">Busca un Pokémon por nombre o número para ver su información.</p>
+    <p v-else class="mensaje">
+      Busca un Pokémon por nombre o número para ver su información.
+    </p>
   </div>
 </template>
 
@@ -65,13 +90,60 @@
 import { ref, onMounted } from "vue";
 import axios from "axios";
 
-const search = ref("ditto");
+const search = ref("growlithe");
 const pokemon = ref(null);
 const pokemonImg = ref("");
 const weaknesses = ref([]);
+const fondoColor = ref("#d9b45d");
+
+const headerStyle = ref({
+  backgroundColor: "#fff6d6",
+});
+
+const typeColors = {
+  normal: "#A8A77A",
+  fire: "#EE8130",
+  water: "#6390F0",
+  electric: "#F7D02C",
+  grass: "#7AC74C",
+  ice: "#96D9D6",
+  fighting: "#C22E28",
+  poison: "#A33EA1",
+  ground: "#E2BF65",
+  flying: "#A98FF3",
+  psychic: "#F95587",
+  bug: "#A6B91A",
+  rock: "#B6A136",
+  ghost: "#735797",
+  dragon: "#6F35FC",
+  dark: "#705746",
+  steel: "#B7B7CE",
+  fairy: "#D685AD",
+};
 
 function capitalizar(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function actualizarHeader(types) {
+  if (!types || types.length === 0) {
+    headerStyle.value.background = "#fff6d6";
+    return;
+  }
+
+  if (types.length === 1) {
+    const c1 = typeColors[types[0]] || "#fff6d6";
+    headerStyle.value = {
+      background: c1,
+    };
+  } else {
+    const c1 = typeColors[types[0]] || "#fff6d6";
+    const c2 = typeColors[types[1]] || "#fff6d6";
+
+    headerStyle.value = {
+      background: `linear-gradient(90deg, ${c1}, ${c2})`,
+    };
+  }
 }
 
 async function buscarPokemon() {
@@ -81,12 +153,19 @@ async function buscarPokemon() {
   try {
     const res = await axios.get(`https://pokeapi.co/api/v2/pokemon/${query}`);
     pokemon.value = res.data;
-    pokemonImg.value = res.data.sprites.other["official-artwork"].front_default;
+    pokemonImg.value =
+      res.data.sprites.other["official-artwork"].front_default;
 
-    const tipos = res.data.types.map((t) => t.type.url);
+    const tipoPrincipal = res.data.types[0].type.name;
+    fondoColor.value = typeColors[tipoPrincipal] || "#ccc";
+
+    const listaTipos = res.data.types.map((t) => t.type.name);
+    actualizarHeader(listaTipos);
+
+    const tiposURL = res.data.types.map((t) => t.type.url);
     const debilidadesSet = new Set();
 
-    for (const url of tipos) {
+    for (const url of tiposURL) {
       const typeRes = await axios.get(url);
       const dobles = typeRes.data.damage_relations.double_damage_from;
       dobles.forEach((d) => debilidadesSet.add(d.name));
@@ -96,7 +175,7 @@ async function buscarPokemon() {
   } catch (error) {
     pokemon.value = null;
     weaknesses.value = [];
-    alert("Pokémon no encontrado 😢");
+    alert("Pokémon no encontrado");
   }
 }
 
@@ -110,9 +189,12 @@ onMounted(buscarPokemon);
   box-sizing: border-box;
 }
 
-html, body, #app {
+html,
+body,
+#app {
   width: 100%;
   height: 100%;
+  overflow: hidden;
   background-color: #f6f8fb;
   font-family: "Comic Sans MS", sans-serif;
   color: #222;
@@ -132,17 +214,17 @@ html, body, #app {
   align-items: center;
   justify-content: space-around;
   width: 100%;
-  background-color: #fff6d6;
   padding: 1rem 0;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: background 0.5s ease;
 }
 
 .header h1 {
   font-size: 2.4rem;
-  color: #c9a02e;
+  color: white;
 }
 
-.img1{
+.img1 {
   width: 50px;
   height: 50px;
 }
@@ -182,14 +264,13 @@ html, body, #app {
   justify-content: center;
   align-items: flex-start;
   width: 90%;
-  /* max-width: 1200px; */
   margin-top: 1rem;
   background: #fff;
   border-radius: 20px;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
   padding: 2rem;
   gap: 2rem;
-  flex-wrap: wrap; /* Responsive */
+  flex-wrap: wrap;
 }
 
 .col {
@@ -202,7 +283,6 @@ html, body, #app {
 }
 
 .pokemon-card {
-  background: #d9b45d;
   padding: 1.5rem;
   border-radius: 15px;
   width: 100%;
@@ -210,6 +290,7 @@ html, body, #app {
   text-align: center;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
   font-size: 1.3rem;
+  transition: background-color 0.3s ease;
 }
 
 .pokemon-card img {
@@ -233,8 +314,8 @@ html, body, #app {
 
 .numero {
   font-size: 5rem;
-  color: #c9a02e;
   margin-bottom: 1rem;
+  transition: color 0.3s ease;
 }
 
 .tags {
@@ -245,22 +326,14 @@ html, body, #app {
   margin-bottom: 1rem;
 }
 
-.type {
-  background: #eabf47;
-  color: #fff;
-  padding: 0.4rem 0.8rem;
-  border-radius: 8px;
-  text-transform: uppercase;
-  font-weight: bold;
-}
-
+.type,
 .weak {
-  background: #7ec8e3;
   color: #fff;
   padding: 0.4rem 0.8rem;
   border-radius: 8px;
   text-transform: uppercase;
   font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 .der {
@@ -290,8 +363,8 @@ html, body, #app {
 
 .fill {
   height: 100%;
-  background: #d9b45d;
   border-radius: 6px;
+  transition: width 0.3s ease, background-color 0.3s ease;
 }
 
 .mensaje {
