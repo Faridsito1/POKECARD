@@ -2,11 +2,8 @@
   <div class="app">
     <header class="header" :style="headerStyle">
       <img src="/src/assets/pikachu.png" alt="Eevee y Pikachu" class="img1" />
-      <h1>Pokémon Info</h1>
-      <img
-        src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/54.png"
-        alt="Psyduck"
-      />
+      <img src="/src/assets/logo.png" alt="logo" class="logo"/>
+      <img src="/src/assets/Psyduck.png" alt="Psyduck" class="img2"/>
     </header>
 
     <section class="buscador">
@@ -189,9 +186,7 @@ onMounted(buscarPokemon);
   box-sizing: border-box;
 }
 
-html,
-body,
-#app {
+html,body {
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -225,8 +220,18 @@ body,
 }
 
 .img1 {
-  width: 50px;
-  height: 50px;
+  width: 200px;
+  height: 110px;
+}
+
+.logo{
+  width: 400;
+  height: 130px;
+}
+
+.img2{
+  width: 130px;
+  height: 130px;
 }
 
 .buscador {
@@ -264,11 +269,10 @@ body,
   justify-content: center;
   align-items: flex-start;
   width: 90%;
-  margin-top: 1rem;
   background: #fff;
   border-radius: 20px;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
+  padding: 1rem;
   gap: 2rem;
   flex-wrap: wrap;
 }
@@ -371,5 +375,112 @@ body,
   font-size: 1.2rem;
   margin-top: 2rem;
   color: #666;
+}
+
+@media (max-width: 1200px) {
+  .logo {
+    width: 300px;
+    height: auto;
+  }
+
+  .pokemon-card img {
+    width: 400px;
+    height: 400px;
+  }
+
+  .titulo-stats {
+    font-size: 2.4rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .contenedor {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .numero {
+    font-size: 4rem;
+  }
+
+  .pokemon-card img {
+    width: 350px;
+    height: 350px;
+  }
+
+  .stat {
+    font-size: 1.2rem;
+  }
+
+  .titulo-stats {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .img1, .img2 {
+    width: 120px;
+    height: auto;
+  }
+
+  .logo {
+    width: 260px;
+    height: auto;
+  }
+
+  .pokemon-card {
+    font-size: 1.1rem;
+  }
+
+  .pokemon-card img {
+    width: 300px;
+    height: 300px;
+  }
+
+  .numero {
+    font-size: 3.2rem;
+  }
+
+  .titulo-stats {
+    font-size: 1.8rem;
+  }
+
+  .buscador input {
+    width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo {
+    width: 200px;
+  }
+
+  .pokemon-card img {
+    width: 250px;
+    height: 250px;
+  }
+
+  .buscador input {
+    width: 160px;
+    font-size: 0.9rem;
+  }
+
+  .buscador button {
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+  }
+
+  .titulo-stats {
+    font-size: 1.6rem;
+  }
+
+  .numero {
+    font-size: 2.5rem;
+  }
 }
 </style>
